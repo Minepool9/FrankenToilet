@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <Import Project="Properties/DeployToPlugins.targets"/>
-
+  <Import Project="Properties/DevMode.targets"/>
   <ItemGroup>
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all"/>
     <PackageReference Include="BepInEx.Core" Version="5.*"/>

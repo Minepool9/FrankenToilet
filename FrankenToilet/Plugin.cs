@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable CS0162 // Unreachable code detected
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -23,8 +24,15 @@ public sealed class Plugin : BaseUnityPlugin
         gameObject.hideFlags = HideFlags.DontSaveInEditor;
         var harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
         var entryPointMethods = new List<MethodInfo>();
+
         foreach (var type in typeof(Plugin).Assembly
-                                           .GetTypes())
+                                           .GetTypes()
+                                           .Where(static type => DevModeInfo.CURRENT_DEV_NAMESPACE == null
+                                                              || (type.Namespace
+                                                                     ?.Split('.', StringSplitOptions.RemoveEmptyEntries)
+                                                                     ?.Any(static n => n.Equals(DevModeInfo.CURRENT_DEV_NAMESPACE,
+                                                                               StringComparison.OrdinalIgnoreCase))
+                                                               ?? false)))
         {
             if (type.GetCustomAttribute<EntryPointAttribute>() != null)
             {

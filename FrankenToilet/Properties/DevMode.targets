@@ -1,0 +1,24 @@
+﻿<Project>
+  <Target Name="AddGeneratedFile_DevMode" BeforeTargets="BeforeCompile;CoreCompile"
+          Inputs="$(MSBuildAllProjects)" Outputs="$(IntermediateOutputPath)GeneratedFile.cs">
+    <PropertyGroup>
+      <CURRENT_DEV Condition="'$(CurrentDevNamespace)' != ''">"$(CurrentDevNamespace)"</CURRENT_DEV>
+      <CURRENT_DEV Condition="'$(CurrentDevNamespace)' == ''">null</CURRENT_DEV>
+      <CURRENT_DEV Condition="'$(Configuration)' == 'Release'">null</CURRENT_DEV>
+      <GeneratedText><![CDATA[
+namespace $(RootNamespace).Core%3B
+
+internal static class DevModeInfo
+{
+    public const string? CURRENT_DEV_NAMESPACE = $(CURRENT_DEV)%3B
+}
+      ]]></GeneratedText>
+      <GeneratedFilePath>$(IntermediateOutputPath)DevModeInfo.cs</GeneratedFilePath>
+    </PropertyGroup>
+    <ItemGroup>
+      <Compile Include="$(GeneratedFilePath)" />
+      <FileWrites Include="$(GeneratedFilePath)" />
+    </ItemGroup>
+    <WriteLinesToFile Lines="$(GeneratedText)" File="$(GeneratedFilePath)" WriteOnlyWhenDifferent="true" Overwrite="true" />
+  </Target>
+</Project>
