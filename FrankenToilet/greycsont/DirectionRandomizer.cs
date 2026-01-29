@@ -7,23 +7,19 @@ namespace FrankenToilet.greycsont;
 
 public static class DirectionRandomizer
 {
-    private static Vector3 cachedDirection;
-    private static bool cachedValid;
-
-    public static void Reset() => cachedValid = false;
+    private static int randomDirection;
+    
+    public static void GenerateRandomDirection() => randomDirection = Random.Range(0, 4);
     
     public static Vector3 Randomize4Dir(Vector3 direction)
     {
-        if (cachedValid) return cachedDirection;
-
         float originalMag = direction.magnitude;
 
         Vector3 right = Vector3.Cross(Vector3.up, direction).normalized;
-
-        var updatedDirection = (Direction)Random.Range(0, 4);
+        
         Vector3 resultDir;
 
-        switch (updatedDirection)
+        switch ((Direction)randomDirection)
         {
             case Direction.Upwards:
                 resultDir = Quaternion.AngleAxis(-90, right) * direction;
@@ -41,14 +37,13 @@ public static class DirectionRandomizer
                 break;
             default:
                 resultDir = direction;
+                LogHelper.LogDebug("FUCK IENUMERATOR");
                 break;
         }
 
-        LogHelper.LogDebug($"Direction: {updatedDirection}");
-
-        cachedDirection = resultDir.normalized * originalMag;
-        cachedValid = true;
-        return cachedDirection;
+        LogHelper.LogDebug($"Direction: {(Direction)randomDirection}");
+        
+        return resultDir.normalized * originalMag;;
     }
 }
 

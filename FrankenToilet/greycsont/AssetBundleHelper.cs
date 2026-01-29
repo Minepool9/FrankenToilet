@@ -11,12 +11,18 @@ namespace FrankenToilet.greycsont;
 public static class AssetBundleHelper
 {
     const string noteSkinPath = "FrankenToilet.greycsont.noteskinstealfrometterna.bundle";
+    
     public static AssetBundle noteSkin;
+    
+    public static Sprite[] noteSprites;
     
     [EntryPoint]
     public static void Initialize()
     {
         if (noteSkin == null) noteSkin = LoadAssetBundle(noteSkinPath);
+        noteSprites = noteSkin.LoadAssetWithSubAssets<Sprite>("arrow");
+        
+        LogHelper.LogDebug($"sprite length: {noteSprites.Length}");
     }
 
     public static AssetBundle LoadAssetBundle(string assetBundlePath)
