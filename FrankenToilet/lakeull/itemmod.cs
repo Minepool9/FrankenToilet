@@ -39,11 +39,14 @@ namespace itemMod
         private static GameObject iglooIcon;
         private static GameObject airheadsIcon;
         private static GameObject gatoradeIcon;
+        private static GameObject orbitIcon;
         public static bool canUseItem = false;
         private static List<GameObject> abilityIcons = new List<GameObject>();
         private static int abilityIndex;
         private static int oldRandomGen = 2;
         public static GameObject iglooObject;
+        public static GameObject orbitObject;
+        
 
         /*
          * Todo:
@@ -83,6 +86,10 @@ namespace itemMod
                 if ($"{gameObject.name}" == "igloo")
                 {
                     iglooObject = gameObject;
+                }
+                if ($"{gameObject.name}" == "orbit")
+                {
+                    orbitObject = gameObject;
                 }
                 else
                 {
@@ -142,6 +149,11 @@ namespace itemMod
             gatoradeIcon.SetActive(false);
             abilityIcons.Add(gatoradeIcon);
 
+            // sixth ability, orbicular: index 5
+            orbitIcon = GameObject.Find(itemCanvas.name + "/" + itemBox.name + "/orbiticon");
+            orbitIcon.SetActive(false);
+            abilityIcons.Add(orbitIcon);
+
             foreach (GameObject ability in abilityIcons)
             {
                 ability.AddComponent<HudOpenEffect>();
@@ -179,7 +191,8 @@ namespace itemMod
             if (abilityIndex == 0)
             {
                 // loads explosion, makes it big
-                GameObject exploder = Addressables.LoadAssetAsync<GameObject>("Assets/Prefabs/Attacks and Projectiles/Explosions/Explosion Malicious Railcannon.prefab").WaitForCompletion();
+                GameObject exploderRef = Addressables.LoadAssetAsync<GameObject>("Assets/Prefabs/Attacks and Projectiles/Explosions/Explosion Malicious Railcannon.prefab").WaitForCompletion();
+                GameObject exploder = GameObject.Instantiate(exploderRef);
                 exploder.transform.SetPositionAndRotation(NewMovement.Instance.transform.position, new Quaternion(0f, 0f, 0f, 0f));
                 exploder.transform.Find("Sphere_8").GetComponent<Explosion>().maxSize = 100;
                 exploder.transform.Find("Sphere_8").GetComponent<Explosion>().speed = 15;
@@ -196,21 +209,22 @@ namespace itemMod
                 bigcoin.transform.SetPositionAndRotation(NewMovement.Instance.transform.position, new Quaternion(0f, 0f, 0f, 0f));
                 bigcoin.transform.GetComponent<Rigidbody>().useGravity = false;
                 bigcoin.transform.GetComponent<Rigidbody>().velocity = new Vector3(0f, 5f, 0f);
-                bigcoin.transform.localScale = new Vector3(10f, 10f, 10f);
+                bigcoin.transform.localScale = new Vector3(30f, 30f, 30f);
                 bigcoin.transform.Translate(new Vector3(0f, 3f, 0f));
                 bigcoin.AddComponent<AlwaysLookAtCamera>();
-                bigcoin.GetComponent<Coin>().power = 30;
+                bigcoin.GetComponent<Coin>().power = 50;
                 bigcoin.GetComponent<Coin>().ricochets = 4;
             }
             // ability 2, igloo
             else if (abilityIndex == 2)
             {
-                if(GameObject.Find("igloo(Clone)") == null)
-                { 
+                if (GameObject.Find("igloo(Clone)") == null)
+                {
                     // make new igloo
                     GameObject iglooObjectInstance = GameObject.Instantiate(iglooObject);
                     iglooObjectInstance.transform.position = NewMovement.Instance.transform.position;
-                } else
+                }
+                else
                 {
                     // set position of existing igloo to player location if its alr present
                     GameObject.Find("igloo(Clone)").transform.position = NewMovement.Instance.transform.position;
@@ -222,13 +236,13 @@ namespace itemMod
                 // grabs a random status effect, 33% chance
                 int buffRandomIndex = UnityEngine.Random.Range(0, 3);
                 LogHelper.LogInfo("airhead index : " + buffRandomIndex);
-                if(buffRandomIndex == 0) // extra speed
+                if (buffRandomIndex == 0) // extra speed
                 {
-                    NewMovement.Instance.transform.GetComponent<NewMovement>().walkSpeed *= 1.5f;
+                    NewMovement.Instance.transform.GetComponent<NewMovement>().walkSpeed *= 2.5f;
                 }
                 if (buffRandomIndex == 1) // extra jump
                 {
-                    NewMovement.Instance.transform.GetComponent<NewMovement>().jumpPower *= 1.5f;
+                    NewMovement.Instance.transform.GetComponent<NewMovement>().jumpPower *= 2.5f;
                 }
                 if (buffRandomIndex == 2) // extra hp
                 {
@@ -238,7 +252,7 @@ namespace itemMod
             // ability 4, gatorade
             else if (abilityIndex == 4)
             {
-                float sizeRandomIndex = UnityEngine.Random.Range(.2f, 2f);
+                float sizeRandomIndex = UnityEngine.Random.Range(.2f, 1.5f);
                 NewMovement.instance.transform.localScale = new Vector3(sizeRandomIndex, sizeRandomIndex, sizeRandomIndex);
                 NewMovement.instance.transform.Find("Main Camera").localScale = new Vector3(1 / sizeRandomIndex, 1 / sizeRandomIndex, 1 / sizeRandomIndex); // inverse of the size 
                 NewMovement.instance.transform.Find("SlopeCheck").localScale = new Vector3(1 / sizeRandomIndex, 1 / sizeRandomIndex, 1 / sizeRandomIndex); // inverse of the size 
@@ -246,9 +260,17 @@ namespace itemMod
                 if (sizeRandomIndex > 1)
                 {
                     // makes player bigger if the player will get bigger to make sure the player can touch the ground
-                    NewMovement.instance.transform.Find("SlopeCheck").localScale = new Vector3(1 * sizeRandomIndex, 1 * sizeRandomIndex, 1 * sizeRandomIndex); 
-                    NewMovement.instance.transform.Find("GroundCheck").localScale = new Vector3(.8f * sizeRandomIndex, .8f * sizeRandomIndex, .85f * sizeRandomIndex); 
+                    NewMovement.instance.transform.Find("SlopeCheck").localScale = new Vector3(1 * sizeRandomIndex, 1 * sizeRandomIndex, 1 * sizeRandomIndex);
+                    NewMovement.instance.transform.Find("GroundCheck").localScale = new Vector3(.8f * sizeRandomIndex, .8f * sizeRandomIndex, .85f * sizeRandomIndex);
                 }
+            }
+            // ability 5, orbitular dog ( black hole)
+            else if (abilityIndex == 5)
+            {
+                GameObject orbitObjectInstance = GameObject.Instantiate(orbitObject);
+                orbitObjectInstance.AddComponent<SphereForce>().strength = 4000;
+                orbitObjectInstance.AddComponent<AlwaysLookAtCamera>();
+                orbitObjectInstance.transform.position = NewMovement.Instance.transform.position;
             }
 
             // plays the use sound effect
