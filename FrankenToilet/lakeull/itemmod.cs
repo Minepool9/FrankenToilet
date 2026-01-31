@@ -40,6 +40,7 @@ namespace itemMod
         public static bool canUseItem = false;
         private static List<GameObject> abilityIcons = new List<GameObject>();
         private static int abilityIndex;
+        private static int oldRandomGen = 2;
         public static GameObject iglooObject;
 
         /*
@@ -47,7 +48,6 @@ namespace itemMod
          * - update
          * - add scene filtering to bundle loading
          */
-
 
         [EntryPoint]
         public static void Awake()
@@ -140,6 +140,13 @@ namespace itemMod
         {
             // define random
             int randomGen = UnityEngine.Random.Range(0, abilityIcons.Count);
+            if (oldRandomGen == randomGen) // checks to see if the ability was the same as last time
+            {
+                randomGen = UnityEngine.Random.Range(0, abilityIcons.Count);
+            }
+            oldRandomGen = randomGen;
+
+            // do ability index stuff
             abilityIndex = randomGen;
             abilityIcons[randomGen].SetActive(true);
 
@@ -186,7 +193,7 @@ namespace itemMod
             // ability 2, igloo
             else if (abilityIndex == 2)
             {
-                if(GameObject.Find("igloo") == null)
+                if(GameObject.Find("igloo(Clone)") == null)
                 { 
                     // make new igloo
                     GameObject iglooObjectInstance = GameObject.Instantiate(iglooObject);
@@ -194,7 +201,7 @@ namespace itemMod
                 } else
                 {
                     // set position of existing igloo to player location if its alr present
-                    GameObject.Find("igloo").transform.position = NewMovement.Instance.transform.position;
+                    GameObject.Find("igloo(Clone)").transform.position = NewMovement.Instance.transform.position;
                 }
             }
 
