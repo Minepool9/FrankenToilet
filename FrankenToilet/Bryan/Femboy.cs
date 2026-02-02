@@ -1,7 +1,9 @@
 ﻿namespace FrankenToilet.Bryan;
 
 using FrankenToilet.Core;
+using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -30,6 +32,8 @@ public class Femboy
 
             if (SceneHelper.CurrentScene == "Level 7-1")
                 FindObject<Image>("Canvas/HurtScreen/White").sprite = BundleLoader.Flash;
+
+            FindObject<TextMeshProUGUI>("Canvas/Level Stats Controller/Level Stats (1)/Style Title")?.text = "AURA";
         };
     }
 
@@ -45,7 +49,7 @@ public class Femboy
         }
 
         var search = scene.Value.GetRootGameObjects().Where(g => g.name == rootSearchObj).FirstOrDefault();
-        search = Path.IndexOf('/') == -1 ? search : search.transform.Find(Path)?.gameObject;
+        search = Path.IndexOf('/') == -1 ? search : search?.transform?.Find(Path)?.gameObject;
         return search?.GetComponent<T>();
     }
 }
