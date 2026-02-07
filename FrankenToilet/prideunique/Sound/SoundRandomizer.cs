@@ -301,8 +301,12 @@ public static class SoundRandomizer
             foreach (var mb in comps)
                 InspectComponent(mb);
 
-            if (go.TryGetComponent<AudioSource>(out var audioSource))
+            var audioSources = go.GetComponents<AudioSource>();
+            foreach (var audioSource in audioSources)
             {
+                if (!audioSource)
+                    continue;
+
                 Type audioType = audioSource.GetType();
 
                 if (!s_inspectionCache.TryGetValue(audioType, out var cachedInfo))
